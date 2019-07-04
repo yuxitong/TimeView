@@ -4,29 +4,54 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PaintFlagsDrawFilter;
-import android.graphics.Path;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.support.annotation.Nullable;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class TimeView extends View {
     private Paint mPaint;
-
+    private Paint mPaintSelect;
+    //年
+    private int year;
+    //月
+    private int month;
+    //天
+    private int day;
+    //周
+    private int week;
+    //时
+    private int hour;
+    //分
+    private int branch;
+    //秒
+    private int second;
     private int width = 100;
+    //当前有多少天
+    private int dayCount;
 
-    private int rot;
+    //秒针转动度数
+    private float secondDegrees;
+    //分针转动度数
+    private float branchDegrees;
+    //月份的转动度数
+    private float monthDegrees;
+    //天的转动度数
+    private float dayDegrees;
+    //小时的转动度数
+    private float hourDegrees;
+    //周的转动度数
+    private float weekDegrees;
 
     //计算月份前进的系数
     private int monthX = 0;
-    private String[] month = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五"
+    private String[] countTag = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五"
             , "十六", "十七", "十八", "十九", "二十", "二十一", "二十二", "二十三", "二十四", "二十五", "二十六", "二十七", "二十八", "二十九", "三十"
             , "三十一", "三十二", "三十三", "三十四", "三十五", "三十六", "三十七", "三十八", "三十九", "四十", "四十一", "四十二", "四十三", "四十四", "四十五"
-            , "四十六", "四十七", "四十八", "四十九", "五十", "五十一", "五十二", "五十三", "五十四", "五十五", "五十六", "五十七", "五十八", "五十九"};
+            , "四十六", "四十七", "四十八", "四十九", "五十", "五十一", "五十二", "五十三", "五十四", "五十五", "五十六", "五十七", "五十八", "五十九","零"};
 
     public TimeView(Context context) {
         this(context, null);
@@ -49,13 +74,40 @@ public class TimeView extends View {
         mPaint = new Paint();
         mPaint.setColor(Color.BLACK);
         mPaint.setAntiAlias(true);
+        mPaint.setTextSize(8f);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        mPaintSelect = new Paint();
+        mPaintSelect.setColor(Color.RED);
+        mPaintSelect.setAntiAlias(true);
+        mPaintSelect.setTextSize(8f);
+        mPaintSelect.setTextAlign(Paint.Align.CENTER);
+
+
+        year = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("yyyy")));
+        month = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("MM")));
+        day = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("dd")));
+        hour = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("HH")));
+        branch = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("mm")));
+        second = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("ss")));
+        week = TimeUtils.getWeek();
+        Log.e("11111", week + "    " + month);
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, 0);
+        dayCount = cal.get(Calendar.DAY_OF_MONTH);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
                     try {
-                        Thread.sleep(100);
-                        rot++;
+                        Thread.sleep(20);
+//                        rot++;
+                        year = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("yyyy")));
+                        month = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("MM")));
+                        day = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("dd")));
+                        hour = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("HH")));
+                        branch = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("mm")));
+                        second = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("ss")));
                         postInvalidate();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -85,77 +137,87 @@ public class TimeView extends View {
 
         super.onDraw(canvas);
         canvas.drawColor(Color.WHITE);
-//        canvas.rotate(90, 500 / 2, 500 / 2);
-
-        mPaint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText("二零一九年", 430, 300, mPaint);
-        canvas.rotate(rot, 430, 300);
-        for (int i = 0; i < 60; i++) {
-            if (i % 5 == 0) {
-//                mPaint.setStrokeWidth(SizeUtils.Dp2Px(getContext(), 1.5f));
-//                mPaint.setColor(mColorLong);
-//                lineWidth = 40;
-                // 这里是字体的绘制
-//                mPaint.setTextSize(mTextSize);
-                monthX = monthX % 12;
-                int a = i + monthX * 5;
-                int index = (((a / 5) == 0 ? 12 - 1 : (a / 5) - 1));
-                String strMonth = month[index > 11 ? index - 12 : index];
-                String text =  strMonth.length() == 2 ? strMonth+"月":strMonth+"  月" ;
-//                Rect textBound = new Rect();
-//                mPaint.getTextBounds(text, 0, text.length(), textBound);
-//                mPaint.setColor(Color.BLACK);
-                canvas.drawText(text, 500, 300, mPaint);
-            }
-            canvas.rotate(6, 430, 300);
-
-            if(i%(60/30) == 0){
-                monthX = monthX % 30;
-                int a = i + monthX * (60/30);
-                int index = (((a / (60/30)) == 0 ? 30 - 1 : (a / (60/30)) - 1));
-                String strMonth = month[index > 29 ? index - 30 : index];
-                String text =  strMonth.length() == 2 ? strMonth+"日":strMonth+"日" ;
-//                Rect textBound = new Rect();
-//                mPaint.getTextBounds(text, 0, text.length(), textBound);
-//                mPaint.setColor(Color.BLACK);
-                canvas.drawText(text, 550, 300, mPaint);
-            }
-
-            if(i%(60/7) == 0){
-                monthX = monthX % 7;
-                int a = i + monthX * (60/7);
-                int index = (((a / (60/7)) == 0 ? 7 - 1 : (a / (60/7)) - 1));
-                String strMonth = month[index > 6 ? index - 7 : index];
-                String text =  strMonth.length() == 2 ? "星期"+strMonth:"星期"+strMonth ;
-//                Rect textBound = new Rect();
-//                mPaint.getTextBounds(text, 0, text.length(), textBound);
-//                mPaint.setColor(Color.BLACK);
-                canvas.drawText(text, 600, 300, mPaint);
-            }
-            if(i%(60/24) == 0){
-                monthX = monthX % 24;
-                int a = i + monthX * (60/24);
-                int index = (((a / (60/24)) == 0 ? 24 - 1 : (a / (60/24)) - 1));
-                String strMonth = month[index > 23 ? index - 24 : index];
-                String text =  strMonth.length() == 2 ? strMonth+"时":strMonth+"时" ;
-//                Rect textBound = new Rect();
-//                mPaint.getTextBounds(text, 0, text.length(), textBound);
-//                mPaint.setColor(Color.BLACK);
-                canvas.drawText(text, 650, 300, mPaint);
-            }
-
+//        canvas.save();
+//        canvas.rotate(90, 460, 300);
+        canvas.save();
+        if (monthDegrees > -(360f / 12) * (month - 1)){
+            monthDegrees--;
+        }else{
+            monthDegrees = -(360f / 12) * (month - 1);
         }
-//        RectF f = new RectF(400,200,800,500);
-//        int saveCount = canvas.saveLayer(f,mPaint);
-//        canvas.drawText("二零一九年", 500, 300, mPaint);
+        canvas.rotate(monthDegrees, 460, 300);
+        onDrawContent(canvas, "月", 12, 500, 300, month - 1);
+        canvas.restore();
+
+        canvas.save();
+        if (dayDegrees > -(360f / dayCount) * (day - 1)){
+            dayDegrees--;
+        }else{
+            dayDegrees = -(360f / dayCount) * (day - 1);
+        }
+        canvas.rotate(dayDegrees, 460, 300);
+        onDrawContent(canvas, "日", dayCount, 540, 300, day - 1);
+        canvas.restore();
 
 
-//        canvas.translate(500,500);
+        canvas.save();
+        if (weekDegrees > -(360f / 7) * (week - 1)){
+            weekDegrees--;
+        }else{
+            weekDegrees = -(360f / 7) * (week - 1);
+        }
+        canvas.rotate(weekDegrees, 460, 300);
+        onDrawContent(canvas, "星期", 7, 580, 300, week-1);
+        canvas.restore();
 
-//        Path path = new Path();
-//        path.addCircle(100, 100, 50, Path.Direction.CW);
-//        canvas.drawTextOnPath("aling a path", path, 0, 0, mPaint);
+        canvas.save();
+        if (hourDegrees > -(360f / 24) * (hour - 1)){
+            hourDegrees--;
+        }else{
+            hourDegrees = -(360f / 24) * (hour - 1);
+        }
+        canvas.rotate(hourDegrees, 460, 300);
+        onDrawContent(canvas, "时", 24, 610, 300, hour - 1);
+        canvas.restore();
 
+
+
+        canvas.save();
+        if (branchDegrees > -(360f / 60) * (branch - 1)){
+            branchDegrees--;
+        }else{
+            branchDegrees = -(360f / 60) * (branch - 1);
+        }
+        canvas.rotate(branchDegrees, 460, 300);
+        onDrawContent(canvas, "分", 60, 650, 300, branch -1);
+        canvas.restore();
+
+
+        canvas.save();
+        if (secondDegrees > -(360f / 60) * (second - 1)){
+            secondDegrees--;
+        }else{
+            secondDegrees = -(360f / 60) * (second - 1);
+        }
+        canvas.rotate(secondDegrees, 460, 300);
+        onDrawContent(canvas, "秒", 60, 700, 300, second - 1);
+        canvas.restore();
+        canvas.drawText("二零一九年", 460, 300, mPaintSelect);
+    }
+
+
+    private void onDrawContent(Canvas canvas, String Company, int count, int x, int y, int Selection) {
+        canvas.save();
+        for (int i = 0; i < count; i++) {
+            String text = countTag[i] + Company;
+            if (i == Selection) {
+                canvas.drawText(text, x, y, mPaintSelect);
+            } else {
+                canvas.drawText(text, x, y, mPaint);
+            }
+            canvas.rotate(360f / count, 460, 300);
+        }
+        canvas.restore();
     }
 
 
