@@ -46,7 +46,9 @@ public class TimeView extends View {
     //周的转动度数
     private float weekDegrees;
 
-    //计算月份前进的系数
+
+    private float yuan = 0f;
+  //计算月份前进的系数
     private int monthX = 0;
     private String[] countTag = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五"
             , "十六", "十七", "十八", "十九", "二十", "二十一", "二十二", "二十三", "二十四", "二十五", "二十六", "二十七", "二十八", "二十九", "三十"
@@ -102,12 +104,16 @@ public class TimeView extends View {
                     try {
                         Thread.sleep(20);
 //                        rot++;
-                        year = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("yyyy")));
-                        month = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("MM")));
-                        day = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("dd")));
-                        hour = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("HH")));
-                        branch = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("mm")));
-                        second = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("ss")));
+                        if(yuan!=360f){
+                            yuan++;
+                        }else {
+                            year = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("yyyy")));
+                            month = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("MM")));
+                            day = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("dd")));
+                            hour = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("HH")));
+                            branch = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("mm")));
+                            second = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("ss")));
+                        }
                         postInvalidate();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -215,7 +221,7 @@ public class TimeView extends View {
             } else {
                 canvas.drawText(text, x, y, mPaint);
             }
-            canvas.rotate(360f / count, 460, 300);
+            canvas.rotate(yuan / count, 460, 300);
         }
         canvas.restore();
     }
