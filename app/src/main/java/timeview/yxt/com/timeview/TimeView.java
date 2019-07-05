@@ -113,6 +113,7 @@ public class TimeView extends View {
                             hour = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("HH")));
                             branch = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("mm")));
                             second = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("ss")));
+                            week = TimeUtils.getWeek();
                         }
                         postInvalidate();
                     } catch (InterruptedException e) {
