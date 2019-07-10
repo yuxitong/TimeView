@@ -166,7 +166,7 @@ public class TimeView extends View {
 
         //绘制月
         canvas.save();
-        monthDegrees = getCircumference(12,month,monthDegrees);
+        monthDegrees = getCircumference(12, month, monthDegrees);
         canvas.rotate(monthDegrees, px, py);
         onDrawContent(canvas, "月", 12, monthlen, py, month - 1);
         canvas.restore();
@@ -174,7 +174,7 @@ public class TimeView extends View {
         //绘制日
         float dayLen = monthlen + mPaintSelect.measureText("三十一日") / 2 + mPaintSelect.measureText("十二月") / 2 + textSpacing;
         canvas.save();
-        dayDegrees = getCircumference(dayCount,day,dayDegrees);
+        dayDegrees = getCircumference(dayCount, day, dayDegrees);
         canvas.rotate(dayDegrees, px, py);
         onDrawContent(canvas, "日", dayCount, dayLen, py, day - 1);
         canvas.restore();
@@ -182,7 +182,7 @@ public class TimeView extends View {
         //绘制星期
         float xingqiLen = dayLen + mPaintSelect.measureText("三十一日") / 2 + mPaintSelect.measureText("星期一") / 2 + textSpacing;
         canvas.save();
-        weekDegrees = getCircumference(7,week,weekDegrees);
+        weekDegrees = getCircumference(7, week, weekDegrees);
         canvas.rotate(weekDegrees, px, py);
         onDrawContent(canvas, "星期", 7, xingqiLen, py, week - 1);
         canvas.restore();
@@ -190,7 +190,8 @@ public class TimeView extends View {
         //绘制时
         float hourLen = xingqiLen + mPaintSelect.measureText("二十四时") / 2 + mPaintSelect.measureText("星期一") / 2 + textSpacing;
         canvas.save();
-        hourDegrees = getCircumference(24,hour,hourDegrees);
+        hourDegrees = getCircumference(24, hour, hourDegrees);
+        Log.e("bbb", hour + " ");
         canvas.rotate(hourDegrees, px, py);
         onDrawContent(canvas, "时", 24, hourLen, py, hour - 1);
         canvas.restore();
@@ -198,7 +199,7 @@ public class TimeView extends View {
         //绘制分
         float branchLen = hourLen + mPaintSelect.measureText("二十四时") / 2 + mPaintSelect.measureText("五十九分") / 2 + textSpacing;
         canvas.save();
-        branchDegrees = getCircumference(60,branch,branchDegrees);
+        branchDegrees = getCircumference(60, branch, branchDegrees);
         canvas.rotate(branchDegrees, px, py);
         onDrawContent(canvas, "分", 60, branchLen, py, branch - 1);
         canvas.restore();
@@ -206,7 +207,7 @@ public class TimeView extends View {
         //绘制秒
         float secondLen = branchLen + mPaintSelect.measureText("五十九秒") / 2 + mPaintSelect.measureText("五十九分") / 2 + textSpacing;
         canvas.save();
-        secondDegrees = getCircumference(60,second,secondDegrees);
+        secondDegrees = getCircumference(60, second, secondDegrees);
         canvas.rotate(secondDegrees, px, py);
         onDrawContent(canvas, "秒", 60, secondLen, py, second - 1);
         canvas.restore();
@@ -215,21 +216,29 @@ public class TimeView extends View {
 
     /**
      * 返回当前圆周率
-     * @param number 一圈有多少个数字
-     * @param arrive    当前在第几个数字
-     * @param currentCircumference  当前圆周率
+     *
+     * @param number               一圈有多少个数字
+     * @param arrive               当前在第几个数字
+     * @param currentCircumference 当前圆周率
      * @return
      */
-    private float getCircumference(int number,int arrive,float currentCircumference){
-        currentCircumference = currentCircumference > -(360f / number) * (arrive - 1)?currentCircumference-1:-(360f / number) * (arrive - 1);
+    private float getCircumference(int number, int arrive, float currentCircumference) {
+        currentCircumference = currentCircumference > -(360f / number) * (arrive - 1) ? currentCircumference - 1 : -(360f / number) * (arrive - 1);
         return currentCircumference;
     }
 
     private void onDrawContent(Canvas canvas, String company, int count, float x, float y, int Selection) {
         canvas.save();
+        if (Selection == -1)
+            Selection = count - 1;
+        if (count != 60) {
+
+        }
         for (int i = 0; i < count; i++) {
             String text = company.contains("星期") ? company + countTag[i] : countTag[i] + company;
             if (i == Selection) {
+                if(text.equals("二十四时"))
+                    text = "零时";
                 canvas.drawText(text, x, y, mPaintSelect);
             } else {
                 canvas.drawText(text, x, y, mPaint);
