@@ -5,9 +5,13 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        TimeView tv = findViewById(R.id.aaa);
+        tv.setTextSize(12);
     }
 }

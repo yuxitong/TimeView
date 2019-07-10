@@ -54,7 +54,7 @@ public class TimeView extends View {
     private float py;
 
     //默认字体大小15px
-    private float textSize = 15f;
+    private float textSize = 12f;
     //默认字体间距5px
     public float textSpacing = 5f;
 
@@ -152,92 +152,83 @@ public class TimeView extends View {
 //    }
     @Override
     protected void onDraw(Canvas canvas) {
-
         super.onDraw(canvas);
         canvas.drawColor(Color.WHITE);
-
         if (px == 0)
             px = getWidth() / 2;
         if (py == 0)
             py = getHeight() / 2;
 
+        //绘制年
         canvas.drawText("二零一九年", px, py, mPaintSelect);
+
         float monthlen = mPaintSelect.measureText("二零一九年") / 2 + px + mPaintSelect.measureText("十二月") / 2 + textSpacing;
-//        canvas.save();
-//        canvas.rotate(90, px, py);
+
+        //绘制月
         canvas.save();
-        if (monthDegrees > -(360f / 12) * (month - 1)) {
-            monthDegrees--;
-        } else {
-            monthDegrees = -(360f / 12) * (month - 1);
-        }
+        monthDegrees = getCircumference(12,month,monthDegrees);
         canvas.rotate(monthDegrees, px, py);
         onDrawContent(canvas, "月", 12, monthlen, py, month - 1);
         canvas.restore();
 
+        //绘制日
         float dayLen = monthlen + mPaintSelect.measureText("三十一日") / 2 + mPaintSelect.measureText("十二月") / 2 + textSpacing;
         canvas.save();
-        if (dayDegrees > -(360f / dayCount) * (day - 1)) {
-            dayDegrees--;
-        } else {
-            dayDegrees = -(360f / dayCount) * (day - 1);
-        }
+        dayDegrees = getCircumference(dayCount,day,dayDegrees);
         canvas.rotate(dayDegrees, px, py);
         onDrawContent(canvas, "日", dayCount, dayLen, py, day - 1);
         canvas.restore();
 
+        //绘制星期
         float xingqiLen = dayLen + mPaintSelect.measureText("三十一日") / 2 + mPaintSelect.measureText("星期一") / 2 + textSpacing;
         canvas.save();
-        if (weekDegrees > -(360f / 7) * (week - 1)) {
-            weekDegrees--;
-        } else {
-            weekDegrees = -(360f / 7) * (week - 1);
-        }
+        weekDegrees = getCircumference(7,week,weekDegrees);
         canvas.rotate(weekDegrees, px, py);
         onDrawContent(canvas, "星期", 7, xingqiLen, py, week - 1);
         canvas.restore();
 
+        //绘制时
         float hourLen = xingqiLen + mPaintSelect.measureText("二十四时") / 2 + mPaintSelect.measureText("星期一") / 2 + textSpacing;
-
         canvas.save();
-        if (hourDegrees > -(360f / 24) * (hour - 1)) {
-            hourDegrees--;
-        } else {
-            hourDegrees = -(360f / 24) * (hour - 1);
-        }
+        hourDegrees = getCircumference(24,hour,hourDegrees);
         canvas.rotate(hourDegrees, px, py);
         onDrawContent(canvas, "时", 24, hourLen, py, hour - 1);
         canvas.restore();
 
+        //绘制分
         float branchLen = hourLen + mPaintSelect.measureText("二十四时") / 2 + mPaintSelect.measureText("五十九分") / 2 + textSpacing;
         canvas.save();
-        if (branchDegrees > -(360f / 60) * (branch - 1)) {
-            branchDegrees--;
-        } else {
-            branchDegrees = -(360f / 60) * (branch - 1);
-        }
+        branchDegrees = getCircumference(60,branch,branchDegrees);
         canvas.rotate(branchDegrees, px, py);
         onDrawContent(canvas, "分", 60, branchLen, py, branch - 1);
         canvas.restore();
 
+        //绘制秒
         float secondLen = branchLen + mPaintSelect.measureText("五十九秒") / 2 + mPaintSelect.measureText("五十九分") / 2 + textSpacing;
         canvas.save();
-        if (secondDegrees > -(360f / 60) * (second - 1)) {
-            secondDegrees--;
-        } else {
-            secondDegrees = -(360f / 60) * (second - 1);
-        }
+        secondDegrees = getCircumference(60,second,secondDegrees);
         canvas.rotate(secondDegrees, px, py);
         onDrawContent(canvas, "秒", 60, secondLen, py, second - 1);
         canvas.restore();
 
     }
 
+    /**
+     * 返回当前圆周率
+     * @param number 一圈有多少个数字
+     * @param arrive    当前在第几个数字
+     * @param currentCircumference  当前圆周率
+     * @return
+     */
+    private float getCircumference(int number,int arrive,float currentCircumference){
+        currentCircumference = currentCircumference > -(360f / number) * (arrive - 1)?currentCircumference-1:-(360f / number) * (arrive - 1);
+        return currentCircumference;
+    }
 
-    private void onDrawContent(Canvas canvas, String Company, int count, float x, float y, int Selection) {
+    private void onDrawContent(Canvas canvas, String company, int count, float x, float y, int Selection) {
         canvas.save();
         for (int i = 0; i < count; i++) {
-            String text = countTag[i] + Company;
+            String text = company.contains("星期") ? company + countTag[i] : countTag[i] + company;
             if (i == Selection) {
                 canvas.drawText(text, x, y, mPaintSelect);
             } else {
@@ -249,12 +240,14 @@ public class TimeView extends View {
     }
 
     //设置字体大小    px
-    public void setTextSize(float textSize){
+    public void setTextSize(float textSize) {
         this.textSize = textSize;
+        mPaint.setTextSize(textSize);
+        mPaintSelect.setTextSize(textSize);
     }
 
     //设置不同单位之间的距离  px
-    public void setTextSpacing(float textSpacing){
+    public void setTextSpacing(float textSpacing) {
         this.textSpacing = textSpacing;
     }
 

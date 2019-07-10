@@ -7,6 +7,7 @@
     tools:context=".MainActivity">
 
     <timeview.yxt.com.timeview.TimeView
+        android:id="@+id/aaa"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
