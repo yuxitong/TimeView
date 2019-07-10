@@ -29,7 +29,6 @@ public class TimeView extends View {
     private int branch;
     //秒
     private int second;
-    private int width = 100;
     //当前有多少天
     private int dayCount;
 
@@ -48,12 +47,21 @@ public class TimeView extends View {
 
 
     private float yuan = 0f;
-  //计算月份前进的系数
-    private int monthX = 0;
+
+    //中心点X
+    private float px;
+    //中心店Y
+    private float py;
+
+    //默认字体大小15px
+    private float textSize = 15f;
+    //默认字体间距5px
+    public float textSpacing = 5f;
+
     private String[] countTag = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五"
             , "十六", "十七", "十八", "十九", "二十", "二十一", "二十二", "二十三", "二十四", "二十五", "二十六", "二十七", "二十八", "二十九", "三十"
             , "三十一", "三十二", "三十三", "三十四", "三十五", "三十六", "三十七", "三十八", "三十九", "四十", "四十一", "四十二", "四十三", "四十四", "四十五"
-            , "四十六", "四十七", "四十八", "四十九", "五十", "五十一", "五十二", "五十三", "五十四", "五十五", "五十六", "五十七", "五十八", "五十九","零"};
+            , "四十六", "四十七", "四十八", "四十九", "五十", "五十一", "五十二", "五十三", "五十四", "五十五", "五十六", "五十七", "五十八", "五十九", "零"};
 
     public TimeView(Context context) {
         this(context, null);
@@ -76,12 +84,12 @@ public class TimeView extends View {
         mPaint = new Paint();
         mPaint.setColor(Color.BLACK);
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(8f);
+        mPaint.setTextSize(textSize);
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaintSelect = new Paint();
         mPaintSelect.setColor(Color.RED);
         mPaintSelect.setAntiAlias(true);
-        mPaintSelect.setTextSize(8f);
+        mPaintSelect.setTextSize(textSize);
         mPaintSelect.setTextAlign(Paint.Align.CENTER);
 
 
@@ -104,9 +112,9 @@ public class TimeView extends View {
                     try {
                         Thread.sleep(20);
 //                        rot++;
-                        if(yuan!=360f){
+                        if (yuan != 360f) {
                             yuan++;
-                        }else {
+                        } else {
                             year = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("yyyy")));
                             month = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("MM")));
                             day = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("dd")));
@@ -125,95 +133,108 @@ public class TimeView extends View {
     }
 
 
-//    @Override
+    //    @Override
 //    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//        // 传入相同的数width，height,确保是正方形背景
-//        setMeasuredDimension(measureSize(widthMeasureSpec), measureSize(heightMeasureSpec));
-//    }
 //
-//    // 这里不用管测量模式是什么，因为咱们有屏幕短边保底，只取其中一个小值即可。测量宽高和屏幕短边作对比，返回最小值
-//    private int measureSize(int measureSpec) {
-//        int size = MeasureSpec.getSize(measureSpec);
-//        width = Math.min(width, size);
-//        return width;
+//        int wSpecMode = MeasureSpec.getMode(widthMeasureSpec);
+//        int wSpecSize = MeasureSpec.getSize(widthMeasureSpec);
+//        int hSpecMode = MeasureSpec.getMode(heightMeasureSpec);
+//        int hSpecSize = MeasureSpec.getSize(heightMeasureSpec);
+//
+//        if (wSpecMode == MeasureSpec.AT_MOST && hSpecMode == MeasureSpec.AT_MOST) {
+//            setMeasuredDimension(py, py);
+//        } else if (wSpecMode == MeasureSpec.AT_MOST) {
+//            setMeasuredDimension(py, hSpecSize);
+//        } else if (hSpecMode == MeasureSpec.AT_MOST) {
+//            setMeasuredDimension(wSpecSize, py);
+//        }
 //    }
-
     @Override
     protected void onDraw(Canvas canvas) {
 
         super.onDraw(canvas);
         canvas.drawColor(Color.WHITE);
+
+        if (px == 0)
+            px = getWidth() / 2;
+        if (py == 0)
+            py = getHeight() / 2;
+
+        canvas.drawText("二零一九年", px, py, mPaintSelect);
+        float monthlen = mPaintSelect.measureText("二零一九年") / 2 + px + mPaintSelect.measureText("十二月") / 2 + textSpacing;
 //        canvas.save();
-//        canvas.rotate(90, 460, 300);
+//        canvas.rotate(90, px, py);
         canvas.save();
-        if (monthDegrees > -(360f / 12) * (month - 1)){
+        if (monthDegrees > -(360f / 12) * (month - 1)) {
             monthDegrees--;
-        }else{
+        } else {
             monthDegrees = -(360f / 12) * (month - 1);
         }
-        canvas.rotate(monthDegrees, 460, 300);
-        onDrawContent(canvas, "月", 12, 500, 300, month - 1);
+        canvas.rotate(monthDegrees, px, py);
+        onDrawContent(canvas, "月", 12, monthlen, py, month - 1);
         canvas.restore();
 
+        float dayLen = monthlen + mPaintSelect.measureText("三十一日") / 2 + mPaintSelect.measureText("十二月") / 2 + textSpacing;
         canvas.save();
-        if (dayDegrees > -(360f / dayCount) * (day - 1)){
+        if (dayDegrees > -(360f / dayCount) * (day - 1)) {
             dayDegrees--;
-        }else{
+        } else {
             dayDegrees = -(360f / dayCount) * (day - 1);
         }
-        canvas.rotate(dayDegrees, 460, 300);
-        onDrawContent(canvas, "日", dayCount, 540, 300, day - 1);
+        canvas.rotate(dayDegrees, px, py);
+        onDrawContent(canvas, "日", dayCount, dayLen, py, day - 1);
         canvas.restore();
 
-
+        float xingqiLen = dayLen + mPaintSelect.measureText("三十一日") / 2 + mPaintSelect.measureText("星期一") / 2 + textSpacing;
         canvas.save();
-        if (weekDegrees > -(360f / 7) * (week - 1)){
+        if (weekDegrees > -(360f / 7) * (week - 1)) {
             weekDegrees--;
-        }else{
+        } else {
             weekDegrees = -(360f / 7) * (week - 1);
         }
-        canvas.rotate(weekDegrees, 460, 300);
-        onDrawContent(canvas, "星期", 7, 580, 300, week-1);
+        canvas.rotate(weekDegrees, px, py);
+        onDrawContent(canvas, "星期", 7, xingqiLen, py, week - 1);
         canvas.restore();
 
+        float hourLen = xingqiLen + mPaintSelect.measureText("二十四时") / 2 + mPaintSelect.measureText("星期一") / 2 + textSpacing;
+
         canvas.save();
-        if (hourDegrees > -(360f / 24) * (hour - 1)){
+        if (hourDegrees > -(360f / 24) * (hour - 1)) {
             hourDegrees--;
-        }else{
+        } else {
             hourDegrees = -(360f / 24) * (hour - 1);
         }
-        canvas.rotate(hourDegrees, 460, 300);
-        onDrawContent(canvas, "时", 24, 610, 300, hour - 1);
+        canvas.rotate(hourDegrees, px, py);
+        onDrawContent(canvas, "时", 24, hourLen, py, hour - 1);
         canvas.restore();
 
-
-
+        float branchLen = hourLen + mPaintSelect.measureText("二十四时") / 2 + mPaintSelect.measureText("五十九分") / 2 + textSpacing;
         canvas.save();
-        if (branchDegrees > -(360f / 60) * (branch - 1)){
+        if (branchDegrees > -(360f / 60) * (branch - 1)) {
             branchDegrees--;
-        }else{
+        } else {
             branchDegrees = -(360f / 60) * (branch - 1);
         }
-        canvas.rotate(branchDegrees, 460, 300);
-        onDrawContent(canvas, "分", 60, 650, 300, branch -1);
+        canvas.rotate(branchDegrees, px, py);
+        onDrawContent(canvas, "分", 60, branchLen, py, branch - 1);
         canvas.restore();
 
-
+        float secondLen = branchLen + mPaintSelect.measureText("五十九秒") / 2 + mPaintSelect.measureText("五十九分") / 2 + textSpacing;
         canvas.save();
-        if (secondDegrees > -(360f / 60) * (second - 1)){
+        if (secondDegrees > -(360f / 60) * (second - 1)) {
             secondDegrees--;
-        }else{
+        } else {
             secondDegrees = -(360f / 60) * (second - 1);
         }
-        canvas.rotate(secondDegrees, 460, 300);
-        onDrawContent(canvas, "秒", 60, 700, 300, second - 1);
+        canvas.rotate(secondDegrees, px, py);
+        onDrawContent(canvas, "秒", 60, secondLen, py, second - 1);
         canvas.restore();
-        canvas.drawText("二零一九年", 460, 300, mPaintSelect);
+
     }
 
 
-    private void onDrawContent(Canvas canvas, String Company, int count, int x, int y, int Selection) {
+    private void onDrawContent(Canvas canvas, String Company, int count, float x, float y, int Selection) {
         canvas.save();
         for (int i = 0; i < count; i++) {
             String text = countTag[i] + Company;
@@ -222,10 +243,19 @@ public class TimeView extends View {
             } else {
                 canvas.drawText(text, x, y, mPaint);
             }
-            canvas.rotate(yuan / count, 460, 300);
+            canvas.rotate(yuan / count, px, py);
         }
         canvas.restore();
     }
 
+    //设置字体大小    px
+    public void setTextSize(float textSize){
+        this.textSize = textSize;
+    }
+
+    //设置不同单位之间的距离  px
+    public void setTextSpacing(float textSpacing){
+        this.textSpacing = textSpacing;
+    }
 
 }
