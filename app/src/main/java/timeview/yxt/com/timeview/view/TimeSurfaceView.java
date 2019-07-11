@@ -75,9 +75,9 @@ public class TimeSurfaceView extends SurfaceView implements
             , "三十一", "三十二", "三十三", "三十四", "三十五", "三十六", "三十七", "三十八", "三十九", "四十", "四十一", "四十二", "四十三", "四十四", "四十五"
             , "四十六", "四十七", "四十八", "四十九", "五十", "五十一", "五十二", "五十三", "五十四", "五十五", "五十六", "五十七", "五十八", "五十九", "零"};
 
-
     public TimeSurfaceView(Context context) {
-        this(context, null);
+        this(context,(AttributeSet)null);
+
     }
 
     public TimeSurfaceView(Context context, AttributeSet attrs) {
@@ -90,13 +90,12 @@ public class TimeSurfaceView extends SurfaceView implements
 
     public TimeSurfaceView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+        init(getHolder());
     }
 
-
-    private void init() {
+    private void init(SurfaceHolder holder) {
         mPaint = new Paint();
-        mPaint.setColor(Color.BLACK);
+        mPaint.setColor(Color.WHITE);
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(textSize);
         mPaint.setTextAlign(Paint.Align.CENTER);
@@ -106,9 +105,9 @@ public class TimeSurfaceView extends SurfaceView implements
         mPaintSelect.setTextSize(textSize);
         mPaintSelect.setTextAlign(Paint.Align.CENTER);
 
-        holder = getHolder();
-        holder.addCallback(this);
-        holder.setFormat(PixelFormat.RGBA_8888);
+        this.holder = holder;
+        this.holder.addCallback(this);
+        this.holder.setFormat(PixelFormat.RGBA_8888);
 
         year = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("yyyy")));
         month = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("MM")));
@@ -125,8 +124,10 @@ public class TimeSurfaceView extends SurfaceView implements
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        thread = new Thread(this);
-        thread.start();
+        if(thread == null) {
+            thread = new Thread(this);
+            thread.start();
+        }
     }
 
     @Override
