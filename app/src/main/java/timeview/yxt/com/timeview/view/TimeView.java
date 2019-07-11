@@ -1,4 +1,4 @@
-package timeview.yxt.com.timeview;
+package timeview.yxt.com.timeview.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,11 +6,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import timeview.yxt.com.timeview.utils.TimeUtils;
 
 public class TimeView extends View {
     private Paint mPaint;
@@ -100,7 +101,6 @@ public class TimeView extends View {
         branch = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("mm")));
         second = Integer.valueOf(TimeUtils.getCurTimeString(new SimpleDateFormat("ss")));
         week = TimeUtils.getWeek();
-        Log.e("11111", week + "    " + month);
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, 0);
         dayCount = cal.get(Calendar.DAY_OF_MONTH);
@@ -162,9 +162,8 @@ public class TimeView extends View {
         //绘制年
         canvas.drawText("二零一九年", px, py, mPaintSelect);
 
-        float monthlen = mPaintSelect.measureText("二零一九年") / 2 + px + mPaintSelect.measureText("十二月") / 2 + textSpacing;
-
         //绘制月
+        float monthlen = mPaintSelect.measureText("二零一九年") / 2 + px + mPaintSelect.measureText("十二月") / 2 + textSpacing;
         canvas.save();
         monthDegrees = getCircumference(12, month, monthDegrees);
         canvas.rotate(monthDegrees, px, py);
@@ -191,7 +190,6 @@ public class TimeView extends View {
         float hourLen = xingqiLen + mPaintSelect.measureText("二十四时") / 2 + mPaintSelect.measureText("星期一") / 2 + textSpacing;
         canvas.save();
         hourDegrees = getCircumference(24, hour, hourDegrees);
-        Log.e("bbb", hour + " ");
         canvas.rotate(hourDegrees, px, py);
         onDrawContent(canvas, "时", 24, hourLen, py, hour - 1);
         canvas.restore();
@@ -231,13 +229,10 @@ public class TimeView extends View {
         canvas.save();
         if (Selection == -1)
             Selection = count - 1;
-        if (count != 60) {
-
-        }
         for (int i = 0; i < count; i++) {
             String text = company.contains("星期") ? company + countTag[i] : countTag[i] + company;
             if (i == Selection) {
-                if(text.equals("二十四时"))
+                if (text.equals("二十四时"))
                     text = "零时";
                 canvas.drawText(text, x, y, mPaintSelect);
             } else {

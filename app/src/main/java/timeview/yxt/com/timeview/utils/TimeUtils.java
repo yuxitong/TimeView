@@ -1,4 +1,4 @@
-package timeview.yxt.com.timeview;
+package timeview.yxt.com.timeview.utils;
 
 
 import java.text.ParseException;
