@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.text.SimpleDateFormat;
@@ -55,7 +56,7 @@ public class TimeView extends View {
     private float py;
 
     //默认字体大小15px
-    private float textSize = 12f;
+    private float textSize = 0f;
     //默认字体间距5px
     public float textSpacing = 5f;
 
@@ -156,8 +157,15 @@ public class TimeView extends View {
         canvas.drawColor(Color.WHITE);
         if (px == 0)
             px = getWidth() / 2;
-        if (py == 0)
+        if (py == 0) {
             py = getHeight() / 2;
+            if (textSize == 0f) {
+                float autoTextSize = (px > py ? py : px - textSpacing * 6) / 27f;
+                mPaint.setTextSize(autoTextSize);
+                mPaintSelect.setTextSize(autoTextSize);
+            }
+        }
+
 
         //绘制年
         canvas.drawText("二零一九年", px, py, mPaintSelect);

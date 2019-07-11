@@ -66,7 +66,7 @@ public class TimeSurfaceView extends SurfaceView implements
     private float py;
 
     //默认字体大小15px
-    private float textSize = 12f;
+    private float textSize = 0f;
     //默认字体间距5px
     public float textSpacing = 5f;
 
@@ -149,8 +149,14 @@ public class TimeSurfaceView extends SurfaceView implements
                     canvas.drawColor(Color.WHITE);
                     if (px == 0)
                         px = getWidth() / 2;
-                    if (py == 0)
+                    if (py == 0) {
                         py = getHeight() / 2;
+                        if (textSize == 0f) {
+                            float autoTextSize = (px > py ? py : px - textSpacing * 6) / 27f;
+                            mPaint.setTextSize(autoTextSize);
+                            mPaintSelect.setTextSize(autoTextSize);
+                        }
+                    }
                     if (yuan != 360f) {
                         yuan = yuan + 5;
                     } else {
