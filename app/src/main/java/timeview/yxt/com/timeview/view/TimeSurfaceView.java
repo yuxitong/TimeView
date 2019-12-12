@@ -95,7 +95,7 @@ public class TimeSurfaceView extends SurfaceView implements
 
     private void init(SurfaceHolder holder) {
         mPaint = new Paint();
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.BLACK);
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(textSize);
         mPaint.setTextAlign(Paint.Align.CENTER);

@@ -6,6 +6,7 @@
        TimeView  是用普通View绘制的
 新增功能，可以吧TimeView设置为桌面背景。
 
+新增功能：新增openGL渲染 GLSurfaceView显示
 样子是这样的：
 
 ![image](https://github.com/yuxitong/TimeView/blob/master/Example.gif)
